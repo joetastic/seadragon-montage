@@ -8,18 +8,21 @@ import fnmatch
 
 matches = []
 def filegenerator():
-    for root, dirnames, filenames in os.walk('.'):
+    for root, dirnames, filenames in os.walk('originals'):
         for filename in fnmatch.filter(filenames, '*.jpg'):
             yield os.path.join(root, filename)
 
 ifiles = filegenerator()
 
 TILE_SIZE = 150
-IMAGE_SIZE = 128 #num avatars wide
+IMAGE_SIZE = 256 #num avatars wide
 
 def get_image(size, level, x, y):
     if size == 1:
-        return ifiles.next()
+        try:
+            return ifiles.next()
+        except StopIteration, e:
+            return 'NULL:'
     if not os.path.exists('%s/%d' % ("avatar_files", level)):
         os.mkdir('%s/%d' % ("avatar_files", level))
     outfile = 'avatar_files/%s/%s_%s.jpg' % (level, x, y)
