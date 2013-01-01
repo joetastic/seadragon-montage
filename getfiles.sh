@@ -1,6 +1,8 @@
 cnt=0
-for image_file in 10000b*.images; do
-cat $image_file |
+echo $cnt;
+for image_file in ../10000*.images; do
+    echo $image_file; echo;
+    cat $image_file |
     while read i
     do
         filename=$(echo $i | cut -d/ -f4-)
@@ -15,7 +17,10 @@ cat $image_file |
         fi
         [ -d $(dirname $filename) ] || mkdir -p $(dirname $filename)
         cnt=$(($cnt+1))
-        curl -s -o $filename $i; echo $i
+        echo -e '\033[1F\033[1G'$cnt
+        curl -s -o $filename $i || (echo $filename; break)
         [ $(($cnt%50)) -eq 0 ] && sleep 1
-    done
+        true
+    done || break
+    mv $image_file $image_file.done
 done
